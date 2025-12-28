@@ -7,15 +7,17 @@ The application demonstrates:
 3. Real-time UI behavior.
 4. Clean frontend logic.
 
-Project Structure: 
-'''
+Project Structure:
+
+```text
 stock-dashboard/
 │
 ├── index.html      // Main UI structure
 ├── style.css       // Styling and layout
 ├── app.js          // Core logic (login, subscriptions, async updates)
 └── README.md       // Project documentation
-'''
+```
+
 
 Steps to run the project:
 1. Clone the repository
