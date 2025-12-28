@@ -8,7 +8,7 @@ const USERS = {
   user2: { email: null, subs: [] }
 };
 
-// PRICE ENGINE
+// Price engine
 let prices = {};
 STOCKS.forEach(stock => {
   prices[stock] = { value: basePrice(), prev: null };
@@ -24,7 +24,7 @@ function updatePrice(stock) {
   prices[stock].value = +(prices[stock].value * (1 + delta / 100)).toFixed(2);
 }
 
-// LOGIN
+// User login
 function login(userKey) {
   const emailInput = document.getElementById(userKey === "user1" ? "email1" : "email2");
   const email = emailInput.value.trim();
@@ -40,7 +40,7 @@ function login(userKey) {
   renderPrices(userKey);
 }
 
-// LOGOUT (ONLY THIS USER)
+// User logout
 function logout(userKey) {
   USERS[userKey] = { email: null, subs: [] };
 
@@ -48,7 +48,7 @@ function logout(userKey) {
   document.getElementById(`login-${userKey}`).style.display = "block";
 }
 
-// STOCK UI
+// Stock display(UI)
 function renderStockCards(userKey) {
   const container = document.getElementById(`stocks-${userKey}`);
   container.innerHTML = "";
@@ -75,7 +75,7 @@ function toggleStock(userKey, stock) {
   renderPrices(userKey);
 }
 
-// PRICE BOARD
+// Price board
 function renderPrices(userKey) {
   const list = document.getElementById(`prices-${userKey}`);
   list.innerHTML = "";
@@ -90,7 +90,7 @@ function renderPrices(userKey) {
   });
 }
 
-// ASYNC UPDATES (INDEPENDENT)
+// Async update
 setInterval(() => {
   if (USERS.user1.email) {
     USERS.user1.subs.forEach(updatePrice);
