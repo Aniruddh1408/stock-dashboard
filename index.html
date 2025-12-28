@@ -1,27 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
   <title>Stock Broker Dashboard</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <div id="login-section">
-    <h2>Login</h2>
-    <input type="email" id="emailInput" placeholder="Enter email" />
-    <button onclick="login()">Login</button>
-  </div>
+  <header class="app-header">
+    <h1>📈 Stock Broker Client Dashboard</h1>
+    <p>Real-time multi-user stock simulation</p>
+  </header>
 
-  <div id="dashboard" style="display:none;">
-    <h2 id="userEmail"></h2>
+  <div class="dashboard-grid">
 
-    <h3>Subscribe to Stocks</h3>
-    <div id="stock-list"></div>
+    // User 1
+    <div class="user-panel">
+      <div id="login-user1" class="login-box">
+        <h3>User 1</h3>
+        <input type="email" id="email1" placeholder="Enter email" />
+        <button onclick="login('user1')">Login</button>
+      </div>
 
-    <h3>Your Subscribed Stocks</h3>
-    <ul id="price-board"></ul>
+      <div id="dashboard-user1" class="dashboard-box" style="display:none;">
+        <h2 id="label-user1"></h2>
+        <div class="stocks" id="stocks-user1"></div>
+        <ul class="prices" id="prices-user1"></ul>
+        <button class="logout" onclick="logout('user1')">Logout</button>
+      </div>
+    </div>
 
-    <button onclick="logout()">Logout</button>
+    // User 2
+    <div class="user-panel">
+      <div id="login-user2" class="login-box">
+        <h3>User 2</h3>
+        <input type="email" id="email2" placeholder="Enter email" />
+        <button onclick="login('user2')">Login</button>
+      </div>
+
+      <div id="dashboard-user2" class="dashboard-box" style="display:none;">
+        <h2 id="label-user2"></h2>
+        <div class="stocks" id="stocks-user2"></div>
+        <ul class="prices" id="prices-user2"></ul>
+        <button class="logout" onclick="logout('user2')">Logout</button>
+      </div>
+    </div>
+
   </div>
 
   <script src="app.js"></script>

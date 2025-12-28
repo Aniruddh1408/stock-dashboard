@@ -1,106 +1,106 @@
-const SUPPORTED_STOCKS = ["GOOG", "TSLA", "AMZN", "META", "NVDA"];
-let currentUser = null;
-let prices = {};
+const STOCKS = [
+  "GOOG", "TSLA", "AMZN", "META", "NVDA",
+  "AAPL", "MSFT", "NFLX", "INTC", "AMD"
+];
 
-SUPPORTED_STOCKS.forEach(stock => {
-  prices[stock] = randomPrice();
+const USERS = {
+  user1: { email: null, subs: [] },
+  user2: { email: null, subs: [] }
+};
+
+// PRICE ENGINE
+let prices = {};
+STOCKS.forEach(stock => {
+  prices[stock] = { value: basePrice(), prev: null };
 });
 
-function randomPrice() {
-  return (Math.random() * 1000 + 100).toFixed(2);
+function basePrice() {
+  return +(Math.random() * 400 + 100).toFixed(2);
+}
+
+function updatePrice(stock) {
+  const delta = (Math.random() * 2 - 1) * 0.4;
+  prices[stock].prev = prices[stock].value;
+  prices[stock].value = +(prices[stock].value * (1 + delta / 100)).toFixed(2);
 }
 
 // LOGIN
-function login() {
-  const email = document.getElementById("emailInput").value;
+function login(userKey) {
+  const emailInput = document.getElementById(userKey === "user1" ? "email1" : "email2");
+  const email = emailInput.value.trim();
   if (!email) return alert("Email required");
 
-  currentUser = email;
-  localStorage.setItem("currentUser", email);
+  USERS[userKey].email = email;
 
-  if (!localStorage.getItem(email)) {
-    localStorage.setItem(email, JSON.stringify([]));
-  }
+  document.getElementById(`login-${userKey}`).style.display = "none";
+  document.getElementById(`dashboard-${userKey}`).style.display = "block";
+  document.getElementById(`label-${userKey}`).innerText = email;
 
-  showDashboard();
+  renderStockCards(userKey);
+  renderPrices(userKey);
 }
 
-// LOGOUT
-function logout() {
-  localStorage.removeItem("currentUser");
-  location.reload();
+// LOGOUT (ONLY THIS USER)
+function logout(userKey) {
+  USERS[userKey] = { email: null, subs: [] };
+
+  document.getElementById(`dashboard-${userKey}`).style.display = "none";
+  document.getElementById(`login-${userKey}`).style.display = "block";
 }
 
-// SHOW DASHBOARD
-function showDashboard() {
-  document.getElementById("login-section").style.display = "none";
-  document.getElementById("dashboard").style.display = "block";
-  document.getElementById("userEmail").innerText = currentUser;
-
-  renderStockOptions();
-  renderPrices();
-}
-
-// STOCK SUBSCRIPTION UI
-function renderStockOptions() {
-  const container = document.getElementById("stock-list");
+// STOCK UI
+function renderStockCards(userKey) {
+  const container = document.getElementById(`stocks-${userKey}`);
   container.innerHTML = "";
 
-  const subscribed = JSON.parse(localStorage.getItem(currentUser));
+  STOCKS.forEach(stock => {
+    const card = document.createElement("div");
+    card.className = "stock-card";
+    if (USERS[userKey].subs.includes(stock)) card.classList.add("selected");
 
-  SUPPORTED_STOCKS.forEach(stock => {
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = subscribed.includes(stock);
-    checkbox.onchange = () => toggleStock(stock);
+    card.innerText = stock;
+    card.onclick = () => toggleStock(userKey, stock);
 
-    container.appendChild(checkbox);
-    container.appendChild(document.createTextNode(stock));
-    container.appendChild(document.createElement("br"));
+    container.appendChild(card);
   });
 }
 
-// TOGGLE SUBSCRIPTION
-function toggleStock(stock) {
-  let subscribed = JSON.parse(localStorage.getItem(currentUser));
+function toggleStock(userKey, stock) {
+  const subs = USERS[userKey].subs;
+  USERS[userKey].subs = subs.includes(stock)
+    ? subs.filter(s => s !== stock)
+    : [...subs, stock];
 
-  if (subscribed.includes(stock)) {
-    subscribed = subscribed.filter(s => s !== stock);
-  } else {
-    subscribed.push(stock);
-  }
-
-  localStorage.setItem(currentUser, JSON.stringify(subscribed));
+  renderStockCards(userKey);
+  renderPrices(userKey);
 }
 
-// RENDER PRICES
-function renderPrices() {
-  const list = document.getElementById("price-board");
+// PRICE BOARD
+function renderPrices(userKey) {
+  const list = document.getElementById(`prices-${userKey}`);
   list.innerHTML = "";
 
-  const subscribed = JSON.parse(localStorage.getItem(currentUser));
+  USERS[userKey].subs.forEach(stock => {
+    const p = prices[stock];
+    const cls = p.prev && p.value < p.prev ? "down" : "up";
 
-  subscribed.forEach(stock => {
     const li = document.createElement("li");
-    li.innerText = `${stock}: $${prices[stock]}`;
+    li.innerHTML = `<strong>${stock}</strong><span class="${cls}">$${p.value}</span>`;
     list.appendChild(li);
   });
 }
 
-// PRICE UPDATES (REAL-TIME)
+// ASYNC UPDATES (INDEPENDENT)
 setInterval(() => {
-  SUPPORTED_STOCKS.forEach(stock => {
-    prices[stock] = randomPrice();
-  });
-
-  if (currentUser) {
-    renderPrices();
+  if (USERS.user1.email) {
+    USERS.user1.subs.forEach(updatePrice);
+    renderPrices("user1");
   }
 }, 1000);
 
-// AUTO LOGIN IF ALREADY LOGGED IN
-const savedUser = localStorage.getItem("currentUser");
-if (savedUser) {
-  currentUser = savedUser;
-  showDashboard();
-}
+setInterval(() => {
+  if (USERS.user2.email) {
+    USERS.user2.subs.forEach(updatePrice);
+    renderPrices("user2");
+  }
+}, 1300);
