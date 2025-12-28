@@ -16,6 +16,7 @@ stock-dashboard/
 ├── app.js          // Core logic (login, subscriptions, async updates)
 └── README.md       // Project documentation
 '''
+
 Steps to run the project:
 1. Clone the repository
 2. Navigate into the project folder
